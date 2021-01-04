@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿/**
+ * tên : nguyen le trong tien
+ * lop 19211tt4165
+ */
+using System;
 namespace FloydTest
 {
     class Node:IComparable<Node>
@@ -15,9 +14,9 @@ namespace FloydTest
 
         public Node(int name, int g, int h)
         {
-            this.Name = name;
-            this.G = g;
-            this.H = h;
+            Name = name;
+            G = g;
+            H = h;
         }
 
         public Node(int name)
@@ -25,10 +24,26 @@ namespace FloydTest
             this.name = name;
         }
 
-        public int Name { get => name; set => name = value; }
-        public int G { get => g; set => g = value; }
-        public int H { get => h; set => h = value; }
-        internal Node Par { get => par; set => par = value; }
+        public int Name
+        {
+            get { return name; }
+            set { name = value; }
+        }
+        public int G
+        {
+            get { return g; }
+            set { g = value; }
+        }
+        public int H
+        {
+            get { return h; }
+            set { h = value; }
+        }
+        internal Node Par
+        {
+            get { return par; }
+            set { par = value; }
+        }
 
         public Node()
         {
@@ -36,21 +51,20 @@ namespace FloydTest
 
         public int CompareTo(Node obj)
         {
-            return (this.G + this.H) - (obj.G + obj.H);
+            return (G + H) - (obj.G + obj.H);
         }
 
-        public void display()
+        public override string ToString()
         {
-            Console.WriteLine(this.Name+" "+this.G+" "+this.H);
+            return Name+" "+G+" "+H;
         }
-
         public override bool Equals(object obj)
         {
-            if (obj == null)
+            if (obj == null || GetType() != obj.GetType())
             {
                 return false;
             }
-            return this.Name == ((Node) obj).Name;
+            return Name == ((Node) obj).Name;
         }
 
         public override int GetHashCode()

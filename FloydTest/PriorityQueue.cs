@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Ten:Nguyen Le Trong Tien
+ * MSSV: 19211TT4165
+ */
+using System;
 using System.Collections.Generic;
 
 // From http://visualstudiomagazine.com/articles/2012/11/01/priority-queues-with-c.aspx
@@ -8,7 +12,7 @@ public class PriorityQueue<T> where T : IComparable<T>
 
 	public PriorityQueue()
 	{
-		this.data = new List<T>();
+		data = new List<T>();
 	}
 
 	public void Enqueue(T item)
@@ -70,7 +74,7 @@ public class PriorityQueue<T> where T : IComparable<T>
 	{
 		string s = "";
 		for (int i = 0; i < data.Count; ++i)
-			s += data[i].ToString() + " ";
+			s += data[i].ToString() + "|";
 		s += "count = " + data.Count;
 		return s;
 	}
