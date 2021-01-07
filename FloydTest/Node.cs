@@ -5,7 +5,7 @@
 using System;
 namespace FloydTest
 {
-    class Node:IComparable<Node>
+    class Node : IComparable<Node>
     {
         private int name;
         private Node par;
@@ -56,7 +56,7 @@ namespace FloydTest
 
         public override string ToString()
         {
-            return Name+" "+G+" "+H;
+            return Name + " " + G + " " + H;
         }
         public override bool Equals(object obj)
         {
@@ -64,7 +64,7 @@ namespace FloydTest
             {
                 return false;
             }
-            return Name == ((Node) obj).Name;
+            return Name == ((Node)obj).Name;
         }
 
         public override int GetHashCode()

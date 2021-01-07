@@ -3,6 +3,7 @@
  * MSSV: 19211TT4165
  */
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 
@@ -56,14 +57,22 @@ namespace FloydTest
                     "i,i,i,4,0",
                 };
 
-                WriteFile(str1, "test.dat");
-                int[,] graph2 = ReadFile("test.dat");
+                WriteFile(str1, "ddnn.dat");
+                int[,] graph2 = ReadFile("ddnn.dat");
+
                 //for (int i = 0; i < graph2.GetLength(0); i++)
                 //{
-                //    AStar(new Node(0), new Node(i),graph2, 5);
+                //    for (int j = 0; j < graph2.GetLength(0); j++)
+                //    {
+                //        Console.WriteLine("Tu {0} -> {1}",i,j);
+                //        if (!AStar(new Node(i), new Node(j), graph2))
+                //        {
+                //            Console.WriteLine("khong co duong di");
+                //        }
+                //        Console.WriteLine();
+                //    }
                 //}
-                AStar(new Node(0), new Node(2), graph2, 5);
-
+                AStar(new Node(0), new Node(2), graph2);
             }
 
             #region ReadWriteFile
@@ -157,7 +166,7 @@ namespace FloydTest
                 Console.Write(O.Name);
                 if (O.Par == null)
                 {
-                    Console.WriteLine();
+                    Console.Write("\t");
                     return;
                 }
                 else
@@ -173,66 +182,72 @@ namespace FloydTest
             /// <param name="G"></param>
             /// <param name="graph"></param>
             /// <param name="V"></param>
-            static void AStar(Node S, Node G, int[,] graph, int V)
+            static bool AStar(Node S, Node G, int[,] graph)
             {
                 // lấy dữ liệu
-                List<List<int>> data = GetData(graph, V);
-                graph = floydWarshall(graph, V);
-                data = GetHeuristic(data, S, graph, V);
-                
+                List<List<int>> data = GetData(graph);
+                graph = floydWarshall(graph);
+                data = GetHeuristic(data, S, graph);
+
                 PriorityQueue<Node> Open = new PriorityQueue<Node>();
                 PriorityQueue<Node> Closed = new PriorityQueue<Node>();
                 S.H = data[S.Name][data[S.Name].Count - 1];
                 Open.Enqueue(S);
 
+                int t = 0;
                 while (true)
                 {
+                    Console.WriteLine("lan lap "+(++t)+": ");
                     if (Open.Empty())
                     {
-                        Console.WriteLine("tim kiem that bai");
-                        return;
+                        //Console.WriteLine("tim kiem that bai");
+                        return false;
                     }
 
                     Node O = Open.Dequeue();
-                    Closed.Enqueue(O);
-
-                    Console.WriteLine("duyet: " + O);
-
+                    Console.WriteLine(" + Duyet: " + O);
+                   
                     if (Equal(O, G))
                     {
-                        Console.WriteLine("tim kiem thanh cong");
+                        //Console.WriteLine("tim kiem thanh cong");
                         GetPath(O);
                         Console.WriteLine("distance: " + (O.H));
-                        return;
+                        return true;
                     }
+
+                    Console.WriteLine(" + Them dinh {0} vao Closed", O);
+                    Closed.Enqueue(O);
 
                     for (int i = 0; i < data[O.Name].Count - 1; i += 2)
                     {
                         int name = data[O.Name][i];
                         int g = O.G + data[O.Name][i + 1];
                         int h = data[name][data[name].Count - 1];
-                       
+
                         Node tmp = new Node(name, g, h);
                         tmp.Par = O;
-                       
+
                         bool ok1 = CheckInPriority(tmp, Open);
                         bool ok2 = CheckInPriority(tmp, Closed);
 
                         if (!ok1 && !ok2)
                         {
+                            Console.WriteLine(" + tao node cho dinh ke[{0}] gan node truoc bang {1} va them vao Open",name,O);
                             Open.Enqueue(tmp);
                         }
+                        else
+                        {
+                            Console.WriteLine(" + tao node cho dinh ke[{0}] gan node truoc bang {1} va khong them vao Open", name, O);
+                        }
                     }
-                    Console.WriteLine("Open: "+Open);
-                    Console.WriteLine("Closed: " + Closed);
-
                 }
             }
             #endregion
 
             #region Floyd
-            static int[,] floydWarshall(int[,] graph, int V)
+            static int[,] floydWarshall(int[,] graph)
             {
+                int V = graph.GetLength(0);
                 int[,] dist = new int[V, V];
 
                 for (int i = 0; i < V; i++)
@@ -271,15 +286,15 @@ namespace FloydTest
             #endregion
 
             #region data
-            static List<List<int>> GetData(int[,] graph, int V)
+            static List<List<int>> GetData(int[,] graph)
             {
                 List<List<int>> data = new List<List<int>>();
                 List<int> l = new List<int>();
 
-                for (int i = 0; i < V; i++)
+                for (int i = 0; i < graph.GetLength(0); i++)
                 {
                     l = new List<int>();
-                    for (int j = 0; j < V; j++)
+                    for (int j = 0; j < graph.GetLength(0); j++)
                     {
                         if (graph[i, j] != 0 && graph[i, j] != INF)
                         {
@@ -293,9 +308,9 @@ namespace FloydTest
                 return data;
             }
 
-            static List<List<int>> GetHeuristic(List<List<int>> data, Node G, int[,] graph, int V)
+            static List<List<int>> GetHeuristic(List<List<int>> data, Node G, int[,] graph)
             {
-                for (int i = 0; i < V; i++)
+                for (int i = 0; i < graph.GetLength(0); i++)
                 {
                     data[i].Add(graph[G.Name, i]);
                 }
