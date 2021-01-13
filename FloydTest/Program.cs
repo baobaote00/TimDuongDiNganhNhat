@@ -56,12 +56,23 @@ namespace FloydTest
                     "i,i,0,1,5",
                     "i,i,2,0,7",
                     "i,i,6,4,0",
-                };
+                };//luu duong di ngan nhat
 
                 WriteFile(str1, "ddnn.dat");
                 int[,] graph1 = ReadFile("ddnn.dat");
                 WriteFile(heuristic1, "ddnn.dat");
                 int[,] graph2 = ReadFile("ddnn.dat");
+                //in danh sach ke 
+                List<List<int>> danhSachKe = GetData(graph1, new Node(3), graph2);
+                foreach (var k in danhSachKe)
+                {
+                    foreach (var l in k)
+                    {
+                        Console.Write(l + "  \t");
+                    }
+                    Console.WriteLine();
+                }
+                //in duong di
                 for (int j = 0; j < graph1.GetLength(0); j++)
                 {
                     Console.WriteLine("Tu {0} -> {1}", 3, j);
@@ -177,55 +188,59 @@ namespace FloydTest
             /// <summary>
             /// thuật toán A*
             /// </summary>
-            /// <param name="S">đỉnh đầu</param>
-            /// <param name="G">đỉnh cuối</param>
+            /// <param name="start">đỉnh đầu</param>
+            /// <param name="last">đỉnh cuối</param>
             /// <param name="graph">ma trận trọng số</param>
             /// <param name="heuristic">ước tính chi phí tối thiểu từ bất kỳ đỉnh nào đến mục tiêu</param>
             /// <returns>đúng nếu tìm được đường đi</returns>
-            static bool AStar(Node S, Node G, int[,] graph,int[,] heuristic)
+            static bool AStar(Node start, Node last, int[,] graph,int[,] heuristic)
             {
                 // lấy dữ liệu
-                List<List<Dinhs>> data = GetData(graph,S,heuristic);
+                List<List<int>> danhSachKe = GetData(graph,start,heuristic);
 
-                PriorityQueue<Node> Open = new PriorityQueue<Node>();
-                PriorityQueue<Node> Closed = new PriorityQueue<Node>();
-                S.Heuristic = data[S.Name][data[S.Name].Count - 1].TrongSo;
-                Open.Enqueue(S);
+              
+
+                PriorityQueue<Node> open = new PriorityQueue<Node>();//luu các đỉnh chuẩn bị đi tới để tìm ra đỉnh có đường đi ngắn nhất
+                PriorityQueue<Node> dinhDaXet = new PriorityQueue<Node>();
+                start.Heuristic = danhSachKe[start.Name][danhSachKe[start.Name].Count - 1];//lay gia tri cuoi cung
+                open.Enqueue(start);
 
                 while (true)
                 {
-                    if (Open.Empty())
+                    if (open.Empty())
                     {
                         //Console.WriteLine("tim kiem that bai");
                         return false;
                     }
 
-                    Node O = Open.Dequeue();
-                    Console.WriteLine("duyet: "+O);
-                    if (Equal(O, G))
+                    Node O = open.Dequeue();
+                    if (Equal(O, last))
                     {
                         GetPath(O);
                         Console.WriteLine("distance: " + (O.Heuristic));
                         return true;
                     }
 
-                    Closed.Enqueue(O);
+                    dinhDaXet.Enqueue(O);
+                     
 
-                    for (int i = 0; i < data[O.Name].Count - 1; i++)
+
+                    for (int i = 0; i < danhSachKe[O.Name].Count - 1; i += 2)
                     {
-                        int name = data[O.Name][i].Dinh;
-                        int g = O.Weight + data[O.Name][i].TrongSo;
-                        int h = data[name][data[name].Count - 1].TrongSo;
+                        int name = danhSachKe[O.Name][i];
+                        int g = O.Weight + danhSachKe[O.Name][i + 1];
+                        int h = danhSachKe[name][danhSachKe[name].Count - 1];//gia tri cuoi cung moi dong
 
                         Node tmp = new Node(name, g, h);
                         tmp.Par = O;
 
-                        bool ok1 = CheckInPriority(tmp, Open);
-                        bool ok2 = CheckInPriority(tmp, Closed);
+                        bool ok1 = CheckInPriority(tmp, open);//cos true
+                        bool ok2 = CheckInPriority(tmp, dinhDaXet);//k cos false 
+                        //false && true
 
-                        if (!ok1 && !ok2)
+                        if (!ok1 && !ok2)//kiem tra dinh trung
                         {
-                            Open.Enqueue(tmp);
+                            open.Enqueue(tmp);
                         }
                     }
                 }
@@ -240,22 +255,23 @@ namespace FloydTest
             /// <param name="A">điểm đầu</param>
             /// <param name="heuristic">ma trận heuristic</param>
             /// <returns>danh sách kề</returns>
-            static List<List<Dinhs>> GetData(int[,] graph, Node S, int[,] heuristic)
+            static List<List<int>> GetData(int[,] graph, Node S, int[,] heuristic)
             {
-                List<List<Dinhs>> data = new List<List<Dinhs>>();
-                List<Dinhs> l = new List<Dinhs>();
+                List<List<int>> data = new List<List<int>>();
+                List<int> l = new List<int>();
 
                 for (int i = 0; i < graph.GetLength(0); i++)
                 {
-                    l = new List<Dinhs>();
+                    l = new List<int>();
                     for (int j = 0; j < graph.GetLength(0); j++)
                     {
                         if (graph[i, j] != 0 && graph[i, j] != INF)
                         {
-                            l.Add(new Dinhs(j, graph[i, j]));
+                            l.Add(j);
+                            l.Add(graph[i, j]);
                         }
                     }
-                    l.Add(new Dinhs(heuristic[S.Name, i]));
+                    l.Add(heuristic[S.Name, i]);
                     data.Add(l);
                 }
 
