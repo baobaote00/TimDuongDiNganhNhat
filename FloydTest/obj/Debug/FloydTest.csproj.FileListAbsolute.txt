@@ -1,0 +1,6 @@
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\bin\Debug\FloydTest.exe.config
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\bin\Debug\FloydTest.exe
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\bin\Debug\FloydTest.pdb
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.csprojResolveAssemblyReference.cache
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.exe
+C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.pdb
