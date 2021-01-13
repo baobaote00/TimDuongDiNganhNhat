@@ -9,14 +9,14 @@ namespace FloydTest
     {
         private int name;
         private Node par;
-        private int g;
-        private int h;
+        private int weight;
+        private int heuristic;
 
         public Node(int name, int g, int h)
         {
             Name = name;
-            G = g;
-            H = h;
+            Weight = g;
+            Heuristic = h;
         }
 
         public Node(int name)
@@ -29,15 +29,15 @@ namespace FloydTest
             get { return name; }
             set { name = value; }
         }
-        public int G
+        public int Weight
         {
-            get { return g; }
-            set { g = value; }
+            get { return weight; }
+            set { weight = value; }
         }
-        public int H
+        public int Heuristic
         {
-            get { return h; }
-            set { h = value; }
+            get { return heuristic; }
+            set { heuristic = value; }
         }
         internal Node Par
         {
@@ -51,12 +51,12 @@ namespace FloydTest
 
         public int CompareTo(Node obj)
         {
-            return (G + H) - (obj.G + obj.H);
+            return (Weight + Heuristic) - (obj.Weight + obj.Heuristic);
         }
 
         public override string ToString()
         {
-            return Name + " " + G + " " + H;
+            return Name + " " + Weight + " " + Heuristic;
         }
         public override bool Equals(object obj)
         {

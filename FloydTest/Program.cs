@@ -20,13 +20,6 @@ namespace FloydTest
 
             public static void Main(string[] args)
             {
-                int[,] graph = {
-                    {0  ,2  ,2  ,INF,11 },
-                    {2  ,0  ,INF,-1 ,INF},
-                    {2  ,INF,0  ,8  ,8  },
-                    {INF,-1 ,8  ,0  ,7  },
-                    {11 ,INF,8  ,7  ,0  }
-                };
                 //int[,] graph2 =
                 //{
                 //    {0  ,INF,INF,4  ,INF,INF,INF,3  },
@@ -38,41 +31,47 @@ namespace FloydTest
                 //    {INF,7  ,8  ,INF,6  ,INF,0  ,INF},
                 //    {3  ,5  ,INF,INF,INF,6  ,INF,0  }
                 //};
-                string[] str = {
+                //string[] str = {
 
-                    "0,i,i,4,i,i,i,3",
-                    "i,0,14,i,6,i,7,5",
-                    "i,14,0,i,i,i,8,i",
-                    "4,i,i,0,7,10,i,i",
-                    "i,6,i,7,0,10,6,i",
-                    "i,i,i,10,10,0,i,6",
-                    "i,7,8,i,6,i,0,i",
-                    "3,5,i,i,i,6,i,0"
-                };
+                //    "0,i,i,4,i,i,i,3",
+                //    "i,0,14,i,6,i,7,5",
+                //    "i,14,0,i,i,i,8,i",
+                //    "4,i,i,0,7,10,i,i",
+                //    "i,6,i,7,0,10,6,i",
+                //    "i,i,i,10,10,0,i,6",
+                //    "i,7,8,i,6,i,0,i",
+                //    "3,5,i,i,i,6,i,0"
+                //};
+
                 string[] str1 = {
-                    "0,1,i,i,3",
+                    "2,1,i,i,3",
                     "i,0,3,3,8",
                     "i,i,0,1,5",
-                    "i,i,2,0,i",
+                    "i,i,2,1,i",
                     "i,i,i,4,0",
+                };
+                string[] heuristic1 = {
+                    "0,1,4,4,3",
+                    "i,0,3,3,8",
+                    "i,i,0,1,5",
+                    "i,i,2,0,7",
+                    "i,i,6,4,0",
                 };
 
                 WriteFile(str1, "ddnn.dat");
+                int[,] graph1 = ReadFile("ddnn.dat");
+                WriteFile(heuristic1, "ddnn.dat");
                 int[,] graph2 = ReadFile("ddnn.dat");
-
-                //for (int i = 0; i < graph2.GetLength(0); i++)
-                //{
-                //    for (int j = 0; j < graph2.GetLength(0); j++)
-                //    {
-                //        Console.WriteLine("Tu {0} -> {1}",i,j);
-                //        if (!AStar(new Node(i), new Node(j), graph2))
-                //        {
-                //            Console.WriteLine("khong co duong di");
-                //        }
-                //        Console.WriteLine();
-                //    }
-                //}
-                AStar(new Node(0), new Node(2), graph2);
+                for (int j = 0; j < graph1.GetLength(0); j++)
+                {
+                    Console.WriteLine("Tu {0} -> {1}", 3, j);
+                    if (!AStar(new Node(3), new Node(j), graph1,graph2))
+                    {
+                        Console.WriteLine("khong co duong di");
+                    }
+                    Console.WriteLine();
+                }
+                //AStar(new Node(3), new Node(1), graph2);
             }
 
             #region ReadWriteFile
@@ -140,9 +139,9 @@ namespace FloydTest
             /// <summary>
             /// kiêm tra co bang hay khong
             /// </summary>
-            /// <param name="O"></param>
-            /// <param name="G"></param>
-            /// <returns></returns>
+            /// <param name="O">đỉnh 1</param>
+            /// <param name="G">đỉnh 2</param>
+            /// <returns>đúng nếu 2 node bằng nhau</returns>
             static bool Equal(Node O, Node G)
             {
                 return O.Name == G.Name;
@@ -152,7 +151,7 @@ namespace FloydTest
             /// </summary>
             /// <param name="tmp"></param>
             /// <param name="a"></param>
-            /// <returns></returns>
+            /// <returns>đúng nếu node hiện tại nằm trong danh sách</returns>
             static bool CheckInPriority(Node tmp, PriorityQueue<Node> a)
             {
                 return a.InQueue(tmp);
@@ -178,26 +177,23 @@ namespace FloydTest
             /// <summary>
             /// thuật toán A*
             /// </summary>
-            /// <param name="S"></param>
-            /// <param name="G"></param>
-            /// <param name="graph"></param>
-            /// <param name="V"></param>
-            static bool AStar(Node S, Node G, int[,] graph)
+            /// <param name="S">đỉnh đầu</param>
+            /// <param name="G">đỉnh cuối</param>
+            /// <param name="graph">ma trận trọng số</param>
+            /// <param name="heuristic">ước tính chi phí tối thiểu từ bất kỳ đỉnh nào đến mục tiêu</param>
+            /// <returns>đúng nếu tìm được đường đi</returns>
+            static bool AStar(Node S, Node G, int[,] graph,int[,] heuristic)
             {
                 // lấy dữ liệu
-                List<List<int>> data = GetData(graph);
-                graph = floydWarshall(graph);
-                data = GetHeuristic(data, S, graph);
+                List<List<int>> data = GetData(graph,S,heuristic);
 
                 PriorityQueue<Node> Open = new PriorityQueue<Node>();
                 PriorityQueue<Node> Closed = new PriorityQueue<Node>();
-                S.H = data[S.Name][data[S.Name].Count - 1];
+                S.Heuristic = data[S.Name][data[S.Name].Count - 1];
                 Open.Enqueue(S);
 
-                int t = 0;
                 while (true)
                 {
-                    Console.WriteLine("lan lap "+(++t)+": ");
                     if (Open.Empty())
                     {
                         //Console.WriteLine("tim kiem that bai");
@@ -205,23 +201,20 @@ namespace FloydTest
                     }
 
                     Node O = Open.Dequeue();
-                    Console.WriteLine(" + Duyet: " + O);
-                   
+                    Console.WriteLine("duyet: "+O);
                     if (Equal(O, G))
                     {
-                        //Console.WriteLine("tim kiem thanh cong");
                         GetPath(O);
-                        Console.WriteLine("distance: " + (O.H));
+                        Console.WriteLine("distance: " + (O.Heuristic));
                         return true;
                     }
 
-                    Console.WriteLine(" + Them dinh {0} vao Closed", O);
                     Closed.Enqueue(O);
 
                     for (int i = 0; i < data[O.Name].Count - 1; i += 2)
                     {
                         int name = data[O.Name][i];
-                        int g = O.G + data[O.Name][i + 1];
+                        int g = O.Weight + data[O.Name][i + 1];
                         int h = data[name][data[name].Count - 1];
 
                         Node tmp = new Node(name, g, h);
@@ -232,61 +225,22 @@ namespace FloydTest
 
                         if (!ok1 && !ok2)
                         {
-                            Console.WriteLine(" + tao node cho dinh ke[{0}] gan node truoc bang {1} va them vao Open",name,O);
                             Open.Enqueue(tmp);
                         }
-                        else
-                        {
-                            Console.WriteLine(" + tao node cho dinh ke[{0}] gan node truoc bang {1} va khong them vao Open", name, O);
-                        }
                     }
-                }
-            }
-            #endregion
-
-            #region Floyd
-            static int[,] floydWarshall(int[,] graph)
-            {
-                int V = graph.GetLength(0);
-                int[,] dist = new int[V, V];
-
-                for (int i = 0; i < V; i++)
-                    for (int j = 0; j < V; j++)
-                        dist[i, j] = graph[i, j];
-
-                for (int k = 0; k < V; k++)
-                    for (int i = 0; i < V; i++)
-                        for (int j = 0; j < V; j++)
-                            if (dist[i, j] > dist[i, k] + dist[k, j])
-                                dist[i, j] = dist[i, k] + dist[k, j];
-
-                return dist;
-            }
-
-            static void printSolution(int[,] dist, int V)
-            {
-                Console.WriteLine("Matrix: ");
-                for (int i = 0; i < V; ++i)
-                {
-                    for (int j = 0; j < V; ++j)
-                    {
-                        if (dist[i, j] == INF)
-                        {
-                            Console.Write("∞\t");
-                        }
-                        else
-                        {
-                            Console.Write(dist[i, j] + "\t");
-                        }
-                    }
-                    Console.WriteLine();
-                    Console.WriteLine();
                 }
             }
             #endregion
 
             #region data
-            static List<List<int>> GetData(int[,] graph)
+            /// <summary>
+            /// chuyển dữ liệu từ ma trận trọng số sang danh sách kề
+            /// </summary>
+            /// <param name="graph">ma trận trọng số</param>
+            /// <param name="A">điểm đầu</param>
+            /// <param name="heuristic">ma trận heuristic</param>
+            /// <returns>danh sách kề</returns>
+            static List<List<int>> GetData(int[,] graph, Node S, int[,] heuristic)
             {
                 List<List<int>> data = new List<List<int>>();
                 List<int> l = new List<int>();
@@ -302,17 +256,8 @@ namespace FloydTest
                             l.Add(graph[i, j]);
                         }
                     }
+                    l.Add(heuristic[S.Name, i]);
                     data.Add(l);
-                }
-
-                return data;
-            }
-
-            static List<List<int>> GetHeuristic(List<List<int>> data, Node G, int[,] graph)
-            {
-                for (int i = 0; i < graph.GetLength(0); i++)
-                {
-                    data[i].Add(graph[G.Name, i]);
                 }
 
                 return data;
