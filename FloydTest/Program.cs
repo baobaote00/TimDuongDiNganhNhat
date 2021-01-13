@@ -185,11 +185,11 @@ namespace FloydTest
             static bool AStar(Node S, Node G, int[,] graph,int[,] heuristic)
             {
                 // lấy dữ liệu
-                List<List<int>> data = GetData(graph,S,heuristic);
+                List<List<Dinhs>> data = GetData(graph,S,heuristic);
 
                 PriorityQueue<Node> Open = new PriorityQueue<Node>();
                 PriorityQueue<Node> Closed = new PriorityQueue<Node>();
-                S.Heuristic = data[S.Name][data[S.Name].Count - 1];
+                S.Heuristic = data[S.Name][data[S.Name].Count - 1].TrongSo;
                 Open.Enqueue(S);
 
                 while (true)
@@ -211,11 +211,11 @@ namespace FloydTest
 
                     Closed.Enqueue(O);
 
-                    for (int i = 0; i < data[O.Name].Count - 1; i += 2)
+                    for (int i = 0; i < data[O.Name].Count - 1; i++)
                     {
-                        int name = data[O.Name][i];
-                        int g = O.Weight + data[O.Name][i + 1];
-                        int h = data[name][data[name].Count - 1];
+                        int name = data[O.Name][i].Dinh;
+                        int g = O.Weight + data[O.Name][i].TrongSo;
+                        int h = data[name][data[name].Count - 1].TrongSo;
 
                         Node tmp = new Node(name, g, h);
                         tmp.Par = O;
@@ -240,23 +240,22 @@ namespace FloydTest
             /// <param name="A">điểm đầu</param>
             /// <param name="heuristic">ma trận heuristic</param>
             /// <returns>danh sách kề</returns>
-            static List<List<int>> GetData(int[,] graph, Node S, int[,] heuristic)
+            static List<List<Dinhs>> GetData(int[,] graph, Node S, int[,] heuristic)
             {
-                List<List<int>> data = new List<List<int>>();
-                List<int> l = new List<int>();
+                List<List<Dinhs>> data = new List<List<Dinhs>>();
+                List<Dinhs> l = new List<Dinhs>();
 
                 for (int i = 0; i < graph.GetLength(0); i++)
                 {
-                    l = new List<int>();
+                    l = new List<Dinhs>();
                     for (int j = 0; j < graph.GetLength(0); j++)
                     {
                         if (graph[i, j] != 0 && graph[i, j] != INF)
                         {
-                            l.Add(j);
-                            l.Add(graph[i, j]);
+                            l.Add(new Dinhs(j, graph[i, j]));
                         }
                     }
-                    l.Add(heuristic[S.Name, i]);
+                    l.Add(new Dinhs(heuristic[S.Name, i]));
                     data.Add(l);
                 }
 

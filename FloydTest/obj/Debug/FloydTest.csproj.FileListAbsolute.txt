@@ -4,3 +4,10 @@ C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\bin\Debug\FloydTest.
 C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.csprojResolveAssemblyReference.cache
 C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.exe
 C:\Users\Admin\Downloads\TimDuongDiNganhNhat-main\FloydTest\obj\Debug\FloydTest.pdb
+D:\git\TimDuongDiNganNhat\FloydTest\bin\Debug\FloydTest.exe.config
+D:\git\TimDuongDiNganNhat\FloydTest\bin\Debug\FloydTest.exe
+D:\git\TimDuongDiNganNhat\FloydTest\bin\Debug\FloydTest.pdb
+D:\git\TimDuongDiNganNhat\FloydTest\obj\Debug\FloydTest.csprojAssemblyReference.cache
+D:\git\TimDuongDiNganNhat\FloydTest\obj\Debug\FloydTest.csproj.CoreCompileInputs.cache
+D:\git\TimDuongDiNganNhat\FloydTest\obj\Debug\FloydTest.exe
+D:\git\TimDuongDiNganNhat\FloydTest\obj\Debug\FloydTest.pdb
