@@ -43,7 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dinhs.cs" />
+    <Compile Include="Canhs.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="Program.cs" />

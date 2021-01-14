@@ -3,7 +3,7 @@
  * MSSV: 19211TT4165
  */
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
@@ -44,10 +44,10 @@ namespace FloydTest
                 //};
 
                 string[] str1 = {
-                    "2,1,i,i,3",
+                    "0,1,i,i,3",
                     "i,0,3,3,8",
                     "i,i,0,1,5",
-                    "i,i,2,1,i",
+                    "i,i,2,0,i",
                     "i,i,i,4,0",
                 };
                 string[] heuristic1 = {
@@ -57,34 +57,81 @@ namespace FloydTest
                     "i,i,2,0,7",
                     "i,i,6,4,0",
                 };//luu duong di ngan nhat
-
+                
                 WriteFile(str1, "ddnn.dat");
                 int[,] graph1 = ReadFile("ddnn.dat");
                 WriteFile(heuristic1, "ddnn.dat");
                 int[,] graph2 = ReadFile("ddnn.dat");
+
                 //in danh sach ke 
-                List<List<int>> danhSachKe = GetData(graph1, new Node(3), graph2);
+                //for (int dinhDau = 0; dinhDau < graph1.GetLength(0); dinhDau++)
+                //{
+                List<List<Canhs>> danhSachKe = GetData(xoaKhuyen(graph1), new Node(0), xoaKhuyen(graph2));
+                inDanhSach(danhSachKe);
+                //    inDanhSach(danhSachKe);
+                //    //in duong di
+                //    for (int j = 0; j < graph1.GetLength(0); j++)
+                //    {
+                //        if (j == dinhDau)
+                //        {
+                //            continue;
+                //        }
+                //        Console.WriteLine("Tu {0} -> {1}", dinhDau, j);
+                //        if (!AStar(new Node(dinhDau), new Node(j), danhSachKe))
+                //        {
+                //            Console.WriteLine("khong co duong di");
+                //        }
+                //        Console.WriteLine();
+                //    }
+                //}
+                AStar(new Node(0), new Node(2), danhSachKe);
+            }
+            /// <summary>
+            /// hàm xóa khuyên
+            /// </summary>
+            /// <param name="graph">ma trận trọng số</param>
+            /// <returns>ma trận trọng số đã xóa khuyên</returns>
+            static int[,] xoaKhuyen(int[,] graph)
+            {
+                int[,] result = new int[graph.GetLength(0), graph.GetLength(0)];
+                for (int i = 0; i < graph.GetLength(0); i++)
+                {
+                    for (int j = 0; j < graph.GetLength(0); j++)
+                    {
+                        result[i, j] = graph[i, j];
+                    }
+                }
+                for (int i = 0; i < result.GetLength(0); i++)
+                {
+                    if (result[i,i]!=0)
+                    {
+                        result[i, i] = 0;
+                    }
+                }
+                return result;
+            }
+            /// <summary>
+            /// in danh sach kề
+            /// </summary>
+            /// <param name="danhSachKe"></param>
+            public static void inDanhSach(List<List<Canhs>> danhSachKe)
+            {
                 foreach (var k in danhSachKe)
                 {
                     foreach (var l in k)
                     {
-                        Console.Write(l + "  \t");
+                        if (l.DinhDau == -1)
+                        {
+                            Console.Write(l.TrongSo + "\t");
+                        }
+                        else
+                        {
+                            Console.Write(l + "\t");
+                        }
                     }
                     Console.WriteLine();
                 }
-                //in duong di
-                for (int j = 0; j < graph1.GetLength(0); j++)
-                {
-                    Console.WriteLine("Tu {0} -> {1}", 3, j);
-                    if (!AStar(new Node(3), new Node(j), graph1,graph2))
-                    {
-                        Console.WriteLine("khong co duong di");
-                    }
-                    Console.WriteLine();
-                }
-                //AStar(new Node(3), new Node(1), graph2);
             }
-
             #region ReadWriteFile
             /// <summary>
             /// ghi gile
@@ -173,17 +220,25 @@ namespace FloydTest
             /// <param name="O"></param>
             static void GetPath(Node O)
             {
-                Console.Write(O.Name);
-                if (O.Par == null)
+                Stack<int> path = new Stack<int>();
+                int dinhDau = O.Name;
+                path.Push(dinhDau);
+                while (O.Par != null)
                 {
-                    Console.Write("\t");
-                    return;
+                    O = O.Par;
+                    path.Push(O.Name);
                 }
-                else
+                foreach (var k in path)
                 {
-                    Console.Write("->");
-                    GetPath(O.Par);
-                }
+                    if (k != path.Last())
+                    {
+                        Console.Write(k + "->");
+                    }
+                    else
+                    {
+                        Console.Write(k+"\t");
+                    }
+                }  
             }
             /// <summary>
             /// thuật toán A*
@@ -193,16 +248,12 @@ namespace FloydTest
             /// <param name="graph">ma trận trọng số</param>
             /// <param name="heuristic">ước tính chi phí tối thiểu từ bất kỳ đỉnh nào đến mục tiêu</param>
             /// <returns>đúng nếu tìm được đường đi</returns>
-            static bool AStar(Node start, Node last, int[,] graph,int[,] heuristic)
+            static bool AStar(Node start, Node last, List<List<Canhs>> danhSachKe)
             {
                 // lấy dữ liệu
-                List<List<int>> danhSachKe = GetData(graph,start,heuristic);
-
-              
-
                 PriorityQueue<Node> open = new PriorityQueue<Node>();//luu các đỉnh chuẩn bị đi tới để tìm ra đỉnh có đường đi ngắn nhất
                 PriorityQueue<Node> dinhDaXet = new PriorityQueue<Node>();
-                start.Heuristic = danhSachKe[start.Name][danhSachKe[start.Name].Count - 1];//lay gia tri cuoi cung
+                start.Heuristic = danhSachKe[start.Name][danhSachKe[start.Name].Count - 1].TrongSo;//lay gia tri cuoi cung
                 open.Enqueue(start);
 
                 while (true)
@@ -217,19 +268,17 @@ namespace FloydTest
                     if (Equal(O, last))
                     {
                         GetPath(O);
-                        Console.WriteLine("distance: " + (O.Heuristic));
+                        Console.WriteLine("tong trong so: " + (O.Heuristic));
                         return true;
                     }
 
                     dinhDaXet.Enqueue(O);
-                     
 
-
-                    for (int i = 0; i < danhSachKe[O.Name].Count - 1; i += 2)
+                    for (int i = 0; i < danhSachKe[O.Name].Count - 1; i++)
                     {
-                        int name = danhSachKe[O.Name][i];
-                        int g = O.Weight + danhSachKe[O.Name][i + 1];
-                        int h = danhSachKe[name][danhSachKe[name].Count - 1];//gia tri cuoi cung moi dong
+                        int name = danhSachKe[O.Name][i].DinhCuoi;
+                        int g = O.Weight + danhSachKe[O.Name][i].TrongSo;
+                        int h = danhSachKe[name][danhSachKe[name].Count - 1].TrongSo;//gia tri cuoi cung moi dong
 
                         Node tmp = new Node(name, g, h);
                         tmp.Par = O;
@@ -255,23 +304,22 @@ namespace FloydTest
             /// <param name="A">điểm đầu</param>
             /// <param name="heuristic">ma trận heuristic</param>
             /// <returns>danh sách kề</returns>
-            static List<List<int>> GetData(int[,] graph, Node S, int[,] heuristic)
+            static List<List<Canhs>> GetData(int[,] graph, Node S, int[,] heuristic)
             {
-                List<List<int>> data = new List<List<int>>();
-                List<int> l = new List<int>();
+                List<List<Canhs>> data = new List<List<Canhs>>();
+                List<Canhs> l = new List<Canhs>();
 
                 for (int i = 0; i < graph.GetLength(0); i++)
                 {
-                    l = new List<int>();
+                    l = new List<Canhs>();
                     for (int j = 0; j < graph.GetLength(0); j++)
                     {
                         if (graph[i, j] != 0 && graph[i, j] != INF)
                         {
-                            l.Add(j);
-                            l.Add(graph[i, j]);
+                            l.Add(new Canhs(i,j, graph[i, j]));
                         }
                     }
-                    l.Add(heuristic[S.Name, i]);
+                    l.Add(new Canhs(-1,-1,heuristic[S.Name, i]));
                     data.Add(l);
                 }
 
